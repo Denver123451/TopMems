@@ -9,4 +9,5 @@ export interface IEditModalProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   meme: IMeme | null;
+  onSave: (meme: IMeme) => void;
 }

@@ -43,6 +43,8 @@ export default function Home() {
     );
     setMemes(newMemes);
     // Тут можна додати збереження в localStorage або cookies
+
+    console.log(updatedMeme);
     setIsModalOpen(false);
   };
 
@@ -95,6 +97,7 @@ export default function Home() {
           isOpen={isModalOpen}
           onOpenChange={setIsModalOpen}
           meme={selectedMeme}
+          onSave={saveMeme}
         />
       </div>
     </>
