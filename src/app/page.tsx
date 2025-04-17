@@ -1,32 +1,15 @@
 'use client';
 import Image from 'next/image';
-import { list } from ' @/utils/list';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { IMeme } from ' @/types/types';
 import { EditModal } from ' @/components/EditModal/EditModal';
 import MemesTable from ' @/components/MemesTable/MemesTable';
-
-const STORAGE_KEY = 'memes';
+import { useMemes } from ' @/hooks/useMemes';
 
 export default function Home() {
+  const { memes, updateMemes } = useMemes();
   const [selectedMeme, setSelectedMeme] = useState<IMeme | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [memes, setMemes] = useState<IMeme[]>([]);
-
-  useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      setMemes(JSON.parse(stored));
-    } else {
-      const initial = list.map((m) => ({
-        ...m,
-        likes: Math.floor(Math.random() * 100),
-        image: window.location.origin + m.image,
-      }));
-      setMemes(initial);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(initial));
-    }
-  }, []);
 
   const openEditModal = (meme: IMeme) => {
     setSelectedMeme(meme);
@@ -34,11 +17,9 @@ export default function Home() {
   };
 
   const saveMeme = (updatedMeme: IMeme) => {
-    const newMemes = memes.map((m) =>
-      m.id === updatedMeme.id ? updatedMeme : m,
+    updateMemes((old) =>
+      old.map((m) => (m.id === updatedMeme.id ? updatedMeme : m)),
     );
-    setMemes(newMemes);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newMemes));
     setIsModalOpen(false);
   };
 
