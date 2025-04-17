@@ -1,6 +1,5 @@
 'use client';
-
-import Image from 'next/image';
+import { Image } from '@heroui/react';
 import { useMemes } from ' @/hooks/useMemes';
 import { Card, CardBody, CardHeader } from '@heroui/card';
 import { Link } from '@heroui/react';
@@ -14,7 +13,6 @@ export default function List() {
         <Image
           src="/img/image-2.webp"
           alt="Image"
-          quality={100}
           width={500}
           height={500}
           className="rounded-[20px] shadow"
@@ -36,7 +34,12 @@ export default function List() {
         {memes.map((meme) => (
           <Card className="py-4" key={meme.id}>
             <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
-              <h4 className="font-bold text-large text-white">{meme.name}</h4>
+              <Link
+                className="flex flex-col justify-between h-full"
+                href={meme.image}
+              >
+                <h4 className="font-bold text-large text-white">{meme.name}</h4>
+              </Link>
               <small className="text-default-500">likes {meme.likes}</small>
             </CardHeader>
             <CardBody className="py-2">
@@ -50,9 +53,8 @@ export default function List() {
                   src={meme.image}
                   width={270}
                   height={270}
-                  unoptimized
                 />
-                <p className="mt-1">{meme.image} </p>
+                {/*<p className="mt-1">{meme.image} </p>*/}
               </Link>
             </CardBody>
           </Card>
