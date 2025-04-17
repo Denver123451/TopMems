@@ -1,5 +1,3 @@
-'use client';
-
 import { Button } from '@heroui/button';
 import { FormEvent } from 'react';
 import {

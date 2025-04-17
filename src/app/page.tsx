@@ -1,35 +1,31 @@
 'use client';
 import Image from 'next/image';
-import AppNavbar from ' @/components/Navbar/Navbar';
-import {
-  Table,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-} from '@heroui/table';
-import { TableBody } from '@react-stately/table';
 import { list } from ' @/utils/list';
-import { Button } from '@heroui/button';
 import { useEffect, useState } from 'react';
 import { IMeme } from ' @/types/types';
-import { EditModal } from ' @/components/Modal/EditModal';
+import { EditModal } from ' @/components/EditModal/EditModal';
+import MemesTable from ' @/components/MemesTable/MemesTable';
+
+const STORAGE_KEY = 'memes';
 
 export default function Home() {
   const [selectedMeme, setSelectedMeme] = useState<IMeme | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [memes, setMemes] = useState(() =>
-    list.map((m) => ({ ...m, likes: 0 })),
-  );
+  const [memes, setMemes] = useState<IMeme[]>([]);
 
   useEffect(() => {
-    setMemes((m) =>
-      m.map((meme) => ({
-        ...meme,
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      setMemes(JSON.parse(stored));
+    } else {
+      const initial = list.map((m) => ({
+        ...m,
         likes: Math.floor(Math.random() * 100),
-        image: window.location.origin + meme.image,
-      })),
-    );
+        image: window.location.origin + m.image,
+      }));
+      setMemes(initial);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(initial));
+    }
   }, []);
 
   const openEditModal = (meme: IMeme) => {
@@ -42,19 +38,16 @@ export default function Home() {
       m.id === updatedMeme.id ? updatedMeme : m,
     );
     setMemes(newMemes);
-    // Тут можна додати збереження в localStorage або cookies
-
-    console.log(updatedMeme);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(newMemes));
     setIsModalOpen(false);
   };
 
   return (
     <>
-      <AppNavbar />
-      <div className="container mx-auto px-4">
+      <section className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center justify-center gap-10 sm:gap-8">
-          <h1 className="text-xl  text-center sm:text-2xl md:text-4xl lg:text-6xl">
-            Welcome to the world of memes
+          <h1 className="text-xl  text-center sm:text-2xl md:text-4xl lg:text-6xl font-bold">
+            Ласкаво просимо у світ мемів
           </h1>
           <Image
             src="/img/image-1.webp"
@@ -66,32 +59,7 @@ export default function Home() {
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         </div>
-        <Table aria-label="" className="mt-10">
-          <TableHeader>
-            <TableColumn>Id</TableColumn>
-            <TableColumn>Name</TableColumn>
-            <TableColumn>Likes</TableColumn>
-            <TableColumn>Actions</TableColumn>
-          </TableHeader>
-          <TableBody>
-            {memes.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell className="text-white">{item.id}</TableCell>
-                <TableCell className="text-white">{item.name}</TableCell>
-                <TableCell className="text-white">{item.likes}</TableCell>
-                <TableCell className="text-white">
-                  <Button
-                    color="primary"
-                    variant="light"
-                    onPress={() => openEditModal(item)}
-                  >
-                    Edit
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <MemesTable memes={memes} openEditModal={openEditModal} />
 
         <EditModal
           isOpen={isModalOpen}
@@ -99,7 +67,7 @@ export default function Home() {
           meme={selectedMeme}
           onSave={saveMeme}
         />
-      </div>
+      </section>
     </>
   );
 }

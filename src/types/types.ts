@@ -11,3 +11,8 @@ export interface IEditModalProps {
   meme: IMeme | null;
   onSave: (meme: IMeme) => void;
 }
+
+export interface IMemesTable {
+  memes: IMeme[];
+  openEditModal: (meme: IMeme) => void;
+}
